@@ -103,6 +103,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let gameOver = false; // Game over flag
 
+    // Load sound effects
+    const collectSound = new Audio('/static/images/eat.mp3');
+    const hitSound = new Audio('/static/images/boo.mp3');
+    const GameOverSound = new Audio('/static/images/gameover.mp3');
+
     document.addEventListener('keydown', (event) => {
         keysPressed[event.key] = true;
     });
@@ -400,6 +405,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 antX + 50 > item.x &&
                 antY < item.y + 30 &&
                 antY + 50 > item.y) {
+
+                // Play collect sound
+                collectSound.play();
+                
                 switch (item.effect) {
                     case 'speed':
                         antSpeed *= item.value;
@@ -443,11 +452,12 @@ document.addEventListener("DOMContentLoaded", function() {
             antY + 50 > enemy.y) {
           if (!enemy.dealtDamage) { // Check if damage has already been dealt
             antHP = Math.max(0, antHP - enemy.value); // Deduct HP from ant
-            points = Math.max(0, points - 50);
+            points = Math.max(0, points - 20);
             enemy.dealtDamage = true; // Mark damage dealt
             enemiesHit++; // Increment enemies hit counter
           }
-
+            
+          hitSound.play();
           activeEnemies.splice(i, 1); // Remove enemy sprite immediately
         }
       }
@@ -473,6 +483,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         ctx.fillText(itemsText, canvas.width / 2, canvas.height / 2 + 100);
 
+        GameOverSound.play();
+        
         let countdown = 10;
         const countdownInterval = setInterval(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
