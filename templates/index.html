@@ -5,11 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ant Hero Quest</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
-<body>
-    <div id="game-container">
+    <body>
+        <div id="infoPanel">
+            <p>Health: <span id="health">0</span></p>
+            <p>Speed: <span id="speed">0</span></p>
+            <p>Points: <span id="points">0</span></p>
+            <p>Ghosts Hit: <span id="enemiesHit">0</span></p>
+            <div id="collectedItems"></div>
+        </div>
+        
         <canvas id="gameCanvas"></canvas>
-    </div>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    </body>
 </html>
