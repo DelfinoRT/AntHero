@@ -34,14 +34,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const items = [
         { name: 'boots', src: '/static/images/boots.png', effect: 'speed', duration: 5000, value: 1.5 },
-        { name: 'diamond', src: '/static/images/diamond.png', effect: 'points', value: 60 },
-        { name: 'golden-grapes', src: '/static/images/golden-grapes.png', effect: 'hp', value: 10, points: 5 },
-        { name: 'cherries', src: '/static/images/cherries.png', effect: 'hp', value: 10, points: 2 },
-        { name: 'pineapples', src: '/static/images/pineapples.png', effect: 'hp', value: 10, points: 2 },
-        { name: 'blueberries', src: '/static/images/blueberries.png', effect: 'hp', value: 10, points: 2 },
-        { name: 'bananas', src: '/static/images/bananas.png', effect: 'hp', value: 10, points: 2 },
-        { name: 'stars', src: '/static/images/star.png', effect: 'hp', value: 10, points: 2 },
-        { name: 'grapes', src: '/static/images/grapes.png', effect: 'hp', value: 10, points: 2 }
+        { name: 'diamond', src: '/static/images/diamond.png', effect: 'points', value: 50 },
+        { name: 'stars', src: '/static/images/star.png', effect: 'points', value: 50 },
+        { name: 'golden-grapes', src: '/static/images/golden-grapes.png', effect: 'hp', value: 20, points: 20 },
+        { name: 'cherries', src: '/static/images/cherries.png', effect: 'hp', value: 10, points: 10 },
+        { name: 'pineapples', src: '/static/images/pineapples.png', effect: 'hp', value: 10, points: 10 },
+        { name: 'blueberries', src: '/static/images/blueberries.png', effect: 'hp', value: 10, points: 10 },
+        { name: 'bananas', src: '/static/images/bananas.png', effect: 'hp', value: 10, points: 10 },
+        { name: 'grapes', src: '/static/images/grapes.png', effect: 'hp', value: 10, points: 10 }
     ];
 
     const enemies = [
@@ -462,7 +462,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
     }
-
+    
+    function checkGameConditions() {
+        if (points >= 500) {
+            showWinnerScreen();
+        }
+    }
+    
     function endGame() {
         gameOver = true;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -478,13 +484,15 @@ document.addEventListener("DOMContentLoaded", function() {
         // Display collected items
         let itemsText = 'Items Collected:\n';
         for (let key in collectedItems) {
-            let item = collectedItems[key];
-            itemsText += `${item.count} x ${item.name}\n`;
+            if (collectedItems.hasOwnProperty(key)) {
+                let item = collectedItems[key];
+                itemsText += `${item.count} x ${key}\n`;
+            }
         }
         ctx.fillText(itemsText, canvas.width / 2, canvas.height / 2 + 100);
 
         GameOverSound.play();
-        
+
         let countdown = 10;
         const countdownInterval = setInterval(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -495,9 +503,22 @@ document.addEventListener("DOMContentLoaded", function() {
             ctx.textAlign = 'center';
             ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
             ctx.font = '24px Arial';
-            ctx.fillText(`Points: ${points}`, canvas.width / 2, canvas.height / 2 + 50);
-            ctx.fillText(itemsText, canvas.width / 2, canvas.height / 2 + 100);
-            ctx.fillText(`Restarting in ${countdown}...`, canvas.width / 2, canvas.height / 2 + 150);
+
+            // Display collected items data
+            let yPos = canvas.height / 2 + 50; // Adjusted yPos for items display
+            for (let itemName in collectedItems) {
+                if (collectedItems.hasOwnProperty(itemName)) {
+                    const itemData = collectedItems[itemName];
+                    const itemSrc = itemData.src;
+                    const itemCount = itemData.count;
+                    const itemImage = new Image();
+                    itemImage.src = itemSrc;
+
+                    ctx.fillText(`Collected ${itemCount}x ${itemName}`, canvas.width / 2, yPos);
+                    ctx.drawImage(itemImage, canvas.width / 2 - 25, yPos - 10, 50, 50);
+                    yPos += 70; // Adjust vertical spacing
+                }
+            }
 
             if (countdown === 0) {
                 clearInterval(countdownInterval);
@@ -506,6 +527,44 @@ document.addEventListener("DOMContentLoaded", function() {
             countdown--;
         }, 1000);
     }
+
+
+function showWinnerScreen() {
+    gameOver = true;
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+    ctx.fillStyle = 'black';
+    ctx.font = '48px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Congratulations! You are the Winner!', canvas.width / 2, canvas.height / 2 - 50);
+
+    // Display collected items data
+    let yPos = canvas.height / 2;
+    for (let itemName in collectedItems) {
+        if (collectedItems.hasOwnProperty(itemName)) {
+            const itemData = collectedItems[itemName];
+            const itemSrc = itemData.src;
+            const itemCount = itemData.count;
+            const itemImage = new Image();
+            itemImage.src = itemSrc;
+
+            ctx.fillText(`Collected ${itemCount}x ${itemName}`, canvas.width / 2, yPos);
+            ctx.drawImage(itemImage, canvas.width / 2 - 25, yPos + 10, 50, 50);
+            yPos += 70; // Adjust vertical spacing
+        }
+    }
+
+    // Example countdown logic for resetting the game after a delay
+    let countdown = 5; // Adjust countdown time as needed
+    const countdownInterval = setInterval(() => {
+        if (countdown === 0) {
+            clearInterval(countdownInterval);
+            resetGame(); // Example function to reset the game
+        } else {
+            countdown--;
+        }
+    }, 1000);
+}
+
 
     function resetGame() {
         antX = 100;
@@ -542,6 +601,7 @@ document.addEventListener("DOMContentLoaded", function() {
             updateAnt();
             checkItemCollisions();
             checkEnemyCollisions();
+            checkGameConditions()
             updateParticles(); // Update particles
             drawAnt();
             drawItems();
