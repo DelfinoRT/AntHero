@@ -8,23 +8,31 @@
     <style>
         body {
             margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url("{{ url_for('static', filename='images/bck1.png') }}");
+            background-size: cover;
+            background-position: center;
             overflow: hidden; /* Prevent scrolling */
         }
-        canvas {
+        #gameCanvas {
             display: block;
         }
     </style>
 </head>
-    <body>
-        <div id="infoPanel">
-            <p>Health: <span id="health">0</span></p>
-            <p>Speed: <span id="speed">0</span></p>
-            <p>Points: <span id="points">0</span></p>
-            <p>Ghosts Hit: <span id="enemiesHit">0</span></p>
-            <div id="collectedItems"></div>
-        </div>
-        
-        <canvas id="gameCanvas"></canvas>
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    </body>
+<body>
+    <div id="infoPanel">
+        <p>Health: <span id="health">0</span></p>
+        <p>Speed: <span id="speed">0</span></p>
+        <p>Points: <span id="points">0</span></p>
+        <p>Ghosts Hit: <span id="enemiesHit">0</span></p>
+        <div id="collectedItems"></div>
+    </div>
+    
+    <canvas id="gameCanvas"></canvas>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
 </html>

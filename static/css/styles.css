@@ -5,7 +5,9 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f0f0;
+  background-image: url("{{ url_for('static', filename='images/bck1.png') }}");
+  background-size: cover;
+  background-position: center;
 }
 
 #game-container {
@@ -22,15 +24,15 @@ canvas {
 }
 
 #infoPanel {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border: 1px solid #000;
-    font-family: Arial, sans-serif;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border: 1px solid #000;
+  font-family: Arial, sans-serif;
 }
 
 #collectedItems img {
-    vertical-align: middle;
+  vertical-align: middle;
 }

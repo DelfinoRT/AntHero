@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const collectSound = new Audio('/static/images/eat.mp3');
     const hitSound = new Audio('/static/images/boo.mp3');
     const GameOverSound = new Audio('/static/images/gameover.mp3');
+    const winnerSound = new Audio('/static/images/win.mp3');
 
     document.addEventListener('keydown', (event) => {
         keysPressed[event.key] = true;
@@ -464,7 +465,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     function checkGameConditions() {
-        if (points >= 500) {
+        if (points >= 500 && !gameOver) {
             showWinnerScreen();
         }
     }
@@ -529,42 +530,64 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-function showWinnerScreen() {
-    gameOver = true;
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
-    ctx.fillStyle = 'black';
-    ctx.font = '48px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Congratulations! You are the Winner!', canvas.width / 2, canvas.height / 2 - 50);
+    function showWinnerScreen() {
+        gameOver = true;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.font = '48px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('You WIN!! Congratulations!', canvas.width / 2, canvas.height / 2);
+        ctx.font = '24px Arial';
+        ctx.fillText(`Points: ${points}`, canvas.width / 2, canvas.height / 2 + 50);
 
-    // Display collected items data
-    let yPos = canvas.height / 2;
-    for (let itemName in collectedItems) {
-        if (collectedItems.hasOwnProperty(itemName)) {
-            const itemData = collectedItems[itemName];
-            const itemSrc = itemData.src;
-            const itemCount = itemData.count;
-            const itemImage = new Image();
-            itemImage.src = itemSrc;
-
-            ctx.fillText(`Collected ${itemCount}x ${itemName}`, canvas.width / 2, yPos);
-            ctx.drawImage(itemImage, canvas.width / 2 - 25, yPos + 10, 50, 50);
-            yPos += 70; // Adjust vertical spacing
+        // Display collected items
+        let itemsText = 'Items Collected:\n';
+        for (let key in collectedItems) {
+            if (collectedItems.hasOwnProperty(key)) {
+                let item = collectedItems[key];
+                itemsText += `${item.count} x ${key}\n`;
+            }
         }
-    }
+        ctx.fillText(itemsText, canvas.width / 2, canvas.height / 2 + 100);
 
-    // Example countdown logic for resetting the game after a delay
-    let countdown = 5; // Adjust countdown time as needed
-    const countdownInterval = setInterval(() => {
-        if (countdown === 0) {
-            clearInterval(countdownInterval);
-            resetGame(); // Example function to reset the game
-        } else {
+        winnerSound.play();
+
+        let countdown = 10;
+        const countdownInterval = setInterval(() => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.font = '48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('You WIN!! Congratulations!', canvas.width / 2, canvas.height / 2);
+            ctx.font = '24px Arial';
+
+            // Display collected items data
+            let yPos = canvas.height / 2 + 50; // Adjusted yPos for items display
+            for (let itemName in collectedItems) {
+                if (collectedItems.hasOwnProperty(itemName)) {
+                    const itemData = collectedItems[itemName];
+                    const itemSrc = itemData.src;
+                    const itemCount = itemData.count;
+                    const itemImage = new Image();
+                    itemImage.src = itemSrc;
+
+                    ctx.fillText(`Collected ${itemCount}x ${itemName}`, canvas.width / 2, yPos);
+                    ctx.drawImage(itemImage, canvas.width / 2 - 25, yPos - 10, 50, 50);
+                    yPos += 70; // Adjust vertical spacing
+                }
+            }
+
+            if (countdown === 0) {
+                clearInterval(countdownInterval);
+                resetGame();
+            }
             countdown--;
-        }
-    }, 1000);
-}
-
+        }, 1000);
+    }
 
     function resetGame() {
         antX = 100;
